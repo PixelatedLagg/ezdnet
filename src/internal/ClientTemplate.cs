@@ -8,16 +8,16 @@ namespace Ezdnet
 {
     internal class ClientTemplate
     {   
-        #pragma warning disable
+        #pragma warning disable CS8602, CS8618
         private DiscordSocketClient _client;
         private CommandService _commands;
         private IServiceProvider _services;
-        private bool debug;
-        private string keyword;
-        public async Task<Tuple<DiscordSocketClient, CommandService, IServiceProvider>> RunBotAsync(string token, string keyword, bool debug = false)
+        private bool _debug;
+        private string _prefix;
+        public async Task<(DiscordSocketClient client, CommandService command, IServiceProvider service)> RunBotAsync(string token, string prefix, bool debug = false)
         {
-            this.debug = debug;
-            this.keyword = keyword;
+            this._debug = debug;
+            this._prefix = prefix;
             _client = new DiscordSocketClient();
             _commands = new CommandService();
             _services = new ServiceCollection().AddSingleton(_client).AddSingleton(_commands).BuildServiceProvider();
@@ -25,9 +25,9 @@ namespace Ezdnet
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
             await Task.Delay(-1);
-            return new Tuple<DiscordSocketClient, CommandService, IServiceProvider>(this._client, this._commands, this._services);
+            return (this._client, this._commands, this._services);
         }
-        public async Task RegisterCommandsAsync()
+        private async Task RegisterCommandsAsync()
         {
             _client.MessageReceived += HandleCommandAsync;
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
@@ -39,17 +39,17 @@ namespace Ezdnet
             if (!message.Author.IsBot)
             {
                 int argPos = 0;
-                if (message.HasStringPrefix(keyword, ref argPos))
+                if (message.HasStringPrefix(_prefix, ref argPos))
                 {
                     var result = await _commands.ExecuteAsync(context, argPos, _services);
-                    if (!result.IsSuccess && debug)
+                    if (!result.IsSuccess && _debug)
                     {
                         Console.WriteLine($"Error: {result.ErrorReason} Message: {message}");
                     }
                 }
             }
         }
-        #pragma warning restore
-        //compiler is picky when it comes to potential null references and ensuring no null references, when we can just ignore them
+        #pragma warning restore CS8602, CS8618
+        //compiler throws weird null warnings which mean almost nothing
     }
 }

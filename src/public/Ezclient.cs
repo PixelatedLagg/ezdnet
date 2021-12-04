@@ -5,9 +5,9 @@ namespace Ezdnet
 {
     public static class Ezclient
     {
-        public static Tuple<DiscordSocketClient, CommandService, IServiceProvider> StartBot(string token, string keyword, bool debug = false)
+        public static (DiscordSocketClient client, CommandService command, IServiceProvider service) StartBot(string token, string keyword, bool debug = false)
         {
-            Tuple<DiscordSocketClient, CommandService, IServiceProvider> client;
+            (DiscordSocketClient, CommandService, IServiceProvider) client;
             client = new ClientTemplate().RunBotAsync(token, keyword, debug).Result;
             return client;
         }
