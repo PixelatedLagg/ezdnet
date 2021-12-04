@@ -6,5 +6,5 @@ Ezclient.StartBot("bot_token", "command_prefix", if_debug);
 ```
 ### Returns:
 ```
-Tuple<DiscordSocketClient, CommandService, IServiceProvider>
+Tuple<DiscordSocketClient client, CommandService command, IServiceProvider service>
 ```
